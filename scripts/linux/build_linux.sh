@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 set -e
 
@@ -19,7 +19,7 @@ $ROOT_DIR/scripts/generate_geko_source.sh geko_source.json $GEKO_LINUX_AUTOUPDAT
 rm -rf $BUILD_DIR
 mkdir $BUILD_DIR
 
-tar -czf "$BUILD_DIR/geko_linux_$(uname -m).tgz" \
+tar -czf $BUILD_DIR/geko.tgz \
 	geko \
 	libProjectDescription.so \
 	Modules/ProjectDescription.swiftmodule \

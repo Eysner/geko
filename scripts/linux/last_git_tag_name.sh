@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
-# Example: ./scripts/linux/last_git_tag_name.sh Geko@*
+# Example: ./scripts/linux/last_git_tag_name.sh Geko/Release/*
 
 TAG_MATCH_PATTERN=$1
 
