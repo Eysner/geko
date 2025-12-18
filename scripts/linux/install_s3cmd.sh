@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # TODO: Github
 rm -rf /etc/apt/sources.list /etc/apt/sources.list.d

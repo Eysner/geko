@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/zsh
 set -eo pipefail
 
 if (( $# != 4 )); then
