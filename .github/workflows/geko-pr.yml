@@ -9,7 +9,10 @@ concurrency:
 
 jobs:
   swiftlint:
-    runs-on: [self-hosted, macOS]
+    runs-on: self-hosted
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GH_USER: ${{ secrets.GH_USER }}
     steps:
       - uses: actions/checkout@v6.0.1
         with:
@@ -21,11 +24,10 @@ jobs:
         env:
           DIFF_BASE: ${{ github.base_ref }}
         run: |
+          git config --global credential.helper '!f() { echo "username=${GH_USER}"; echo "password=${GH_PAT}"; }; f'
           git fetch origin $DIFF_BASE
-          brew install swiftlint
-          base=$(git merge-base --fork-point @{upstream} FETCH_HEAD || git merge-base @{upstream} FETCH_HEAD)
-          changedFiles=$(git --no-pager diff --diff-filter=AMR --name-only "$base"...HEAD -- '*.swift')
-          swiftlint $changedFiles | \
+          changedFiles=$(git --no-pager diff --diff-filter=AMR --name-only --merge-base FETCH_HEAD -- '*.swift')
+          [ -n "$changedFiles" ] && swift package plugin --allow-writing-to-package-directory swiftlint --config .swiftlint.yml $changedFiles | \
             sed -E "s/$(pwd|sed 's/\//\\\//g')\///" | \
             sed -E 's/^(.*):([0-9]+):([0-9]+): (warning|error|[^:]+): (.*)/::\4 file=\1,line=\2,col=\3::\5/'
 
@@ -34,6 +36,7 @@ jobs:
     runs-on: [self-hosted, macOS]
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
+      GH_USER: ${{ secrets.GH_USER }}
     steps:
       - uses: actions/checkout@v6.0.1
         with:
@@ -41,8 +44,7 @@ jobs:
 
       - name: build_and_test
         run: |
-          git config --global credential.helper 'cache --timeout=3600'
-          git config --global url."https://${GH_PAT}@github.com/".insteadOf "https://github.com/"
+          git config --global credential.helper '!f() { echo "username=${GH_USER}"; echo "password=${GH_PAT}"; }; f'
           set -o pipefail && xcrun swift test | xcbeautify --renderer github-actions --is-ci
 
   build_and_test_linux:
@@ -50,6 +52,7 @@ jobs:
     runs-on: [self-hosted, Linux]
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
+      GH_USER: ${{ secrets.GH_USER }}
     steps:
       - uses: actions/checkout@v6.0.1
         with:
@@ -57,17 +60,15 @@ jobs:
 
       - name: build_and_test
         run: |
-          git config --global credential.helper 'cache --timeout=3600'
-          git config --global url."https://${GH_PAT}@github.com/".insteadOf "https://github.com/"
-          set -o pipefail && \
-            swift test \
-              --filter GekoAcceptanceTests \
-              --filter GekoSupportTests \
-              --filter GekoCoreIntegrationTests \
-              --filter GekoCocoapodsTests \
-              --filter GekoCoreTests \
-              --filter GekoDependenciesTests \
-              --filter GekoGraphTests \
-              --filter GekoKitTests \
-              --filter ProjectDescriptionTests \
-              --filter PubGrubTests \
+          git config --global credential.helper '!f() { echo "username=${GH_USER}"; echo "password=${GH_PAT}"; }; f'
+          swift test \
+            --filter GekoAcceptanceTests \
+            --filter GekoSupportTests \
+            --filter GekoCoreIntegrationTests \
+            --filter GekoCocoapodsTests \
+            --filter GekoCoreTests \
+            --filter GekoDependenciesTests \
+            --filter GekoGraphTests \
+            --filter GekoKitTests \
+            --filter ProjectDescriptionTests \
+            --filter PubGrubTests \
