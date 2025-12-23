@@ -37,8 +37,7 @@ jobs:
       - name: Build
         id: build
         run: |
-          git config --global credential.helper 'cache --timeout=3600'
-          git config --global url."https://${GH_PAT}@github.com/".insteadOf "https://github.com/"
+          git config --global credential.helper '!f() { echo "username=${GH_USER}"; echo "password=${GH_PAT}"; }; f'
           export CI_COMMIT_SHORT_SHA=${COMMIT_SHA:0:8}
           scripts/linux/build.sh -n Geko -b ${BUMP_TYPE:-"minor"}
           echo "arch=$(uname -m)" >> $GITHUB_OUTPUT

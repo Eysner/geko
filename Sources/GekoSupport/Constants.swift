@@ -9,7 +9,7 @@ public enum Constants {
     public static let projectDescriptionVersion = "release/0.14.0"
     public static let isStage = true
     public static let execSupportMinVersion = "0.6.0"
-    public static let bundleName : String = "geko.zip"
+    public static let bundleName: String = "geko.zip"
     public static let trueValues: [String] = ["1", "true", "TRUE", "yes", "YES"]
     public static let gekoDirectoryName: String = "Geko"
 
