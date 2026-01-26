@@ -1,0 +1,29 @@
+name: 'Detect only docs changes'
+outputs:
+  run:
+    description: "Run"
+    value: ${{ steps.only_docs_changes.outputs.run }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect only docs changes
+      id: only_docs_changes
+      shell: bash
+      env:
+        DIFF_BASE: ${{ github.base_ref }}
+      run: |
+        git fetch origin $DIFF_BASE
+      
+        changedFiles=$(git --no-pager diff --diff-filter=AMR --name-only --merge-base FETCH_HEAD)
+
+        checked=(
+          '^docs/' 
+          '^.github/workflows/docs.yml$'
+        )
+        re="$(printf '%s|' "${checked[@]}")"
+        re="${re%|}"
+        if grep -qvE $re <<< "$changedFiles"; then
+          echo "run=true" >> $GITHUB_OUTPUT
+        else
+          echo "run=false" >> $GITHUB_OUTPUT
+        fi
